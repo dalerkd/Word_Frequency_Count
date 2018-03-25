@@ -1,6 +1,7 @@
 #define CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include <windows.h>
 
 #include "CDictTrie.h"
 
@@ -9,7 +10,7 @@
 #include  <fstream>
 #include  <string>
 
-using namespace std;
+//using namespace std;
 
 
 void PrintM(const char* str,size_t Counte)
@@ -18,16 +19,15 @@ void PrintM(const char* str,size_t Counte)
 
 }
 
-
-int main(int argc,char** argv)
+int work(int argc, char** argv)
 {
 	const char* inputFileNmae = nullptr;
-	if(argc==1)
+	if (argc == 1)
 	{
 		inputFileNmae = "data.txt";
 
 	}
-	else if(argc==2)
+	else if (argc == 2)
 	{
 		inputFileNmae = argv[1];
 	}
@@ -36,31 +36,39 @@ int main(int argc,char** argv)
 		printf("参数过多");
 		system("pause");
 	}
+	SetConsoleTitleA(inputFileNmae); // 设置窗口标题
 
 
-	cout<<"Welcome,欢迎使用字典树"<<endl;
-	
+	cout << "Welcome,欢迎使用字典树" << endl;
+
 
 	CDictTrie* CA = new CDictTrie();
 
-	ifstream fin(inputFileNmae);  
-	string str;  
-	while( fin >> str ) 
-	{    
+	ifstream fin(inputFileNmae);
+	if (!fin.is_open())
+	{
+		printf("待分析数据文件不存在:%s", inputFileNmae);
+		system("pause");
+		return -1;
+	}
+
+	string str;
+	while (fin >> str)
+	{
 		cout << "Read from file: " << str << endl;
 
-		size_t length =strlen(str.c_str())+1;
+		size_t length = strlen(str.c_str()) + 1;
 
-		char* pC=new char[length]();
-		strcpy_s(pC,length,str.c_str());
-		
-		for (size_t i=0;pC[i]!='\0';++i)
+		char* pC = new char[length]();
+		strcpy_s(pC, length, str.c_str());
+
+		for (size_t i = 0;pC[i] != '\0';++i)
 		{
-			if(isalpha(pC[i]))
+			if (isalpha(pC[i]))
 			{
 				if (isupper(pC[i]))
 				{
-					pC[i]+=0x20;
+					pC[i] += 0x20;
 				}
 
 			}
@@ -71,40 +79,51 @@ int main(int argc,char** argv)
 
 
 		}
-		
+
 
 		CA->SaveData((char*)pC);
 
-here:;
+	here:;
 		delete(pC);
 	}
 	fin.close();
-	
-	int c=CA->QueryData("hi");
-	cout<<c<<endl;
-	c=CA->QueryData("hello");
-	cout<<c<<endl;
-	c=CA->QueryData("my");
-	cout<<c<<endl;
-	
+
+	int c = CA->QueryData("hi");
+	cout << c << endl;
+	c = CA->QueryData("hello");
+	cout << c << endl;
+	c = CA->QueryData("my");
+	cout << c << endl;
+
 	CA->Sort();
 
-	
+
 	fflush(stdin);
 
 	system("pause");
 	delete(CA);
-	
+
 	/*cout<<"nihao"<<endl;
 	Node *head=createNew();
 	char s[10];
 	while(cin>>s,strcmp(s,"quit"))
 	{
-		Insert_str(s,head);
+	Insert_str(s,head);
 	}*/
-	
-	_CrtDumpMemoryLeaks();
 
+
+
+	
+
+	return 0;
+}
+
+
+int main(int argc,char** argv)
+{
+	work(argc, argv);
+	_CrtDumpMemoryLeaks();
+	_asm int 3;
 	return 0;
 }
 
