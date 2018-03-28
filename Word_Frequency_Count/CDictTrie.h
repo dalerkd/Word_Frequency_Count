@@ -53,10 +53,10 @@ public:
 
 	void	LocalLoadDataBase(){};//加载数据库数据从本地文件TODO
 	void	LocalSaveDataBase(){};//存储数据库数据到本地文件TODO
-
-	void	Sort();/*一个想法是Explorer的同时进行排序，用链表,来存放单词和频率*/
-
-
+	//更像是分析
+	void	Sort();/* 一个想法是Explorer的同时进行排序，用链表,来存放单词和频率*/
+	void	AnalysisData();/*分析获得的数据*/
+	void	ReadDateFromFile(const char* filePath);
 private:
 
 	PNode	CreateNode();
