@@ -218,7 +218,7 @@ void CDictTrie::Sort()
 
 void CDictTrie::AnalysisData()
 {
-	size_t count = 0, all = 0;
+	size_t count = 0, all/*总的单词量*/ = 0;
 	for (size_t i = 0;i < Hi;++i)
 	{
 		if (pWord[i].RFC != 0)
@@ -253,20 +253,55 @@ void CDictTrie::AnalysisData()
 
 	size_t var_knowWordNumber = 0;
 	size_t var_noKnowNumber = 0;
+
+	/*
+	1. 先找到所有的已知词汇的RCF和。
+
+	
+	*/
+	size_t all_know_RFC = 0;
 	for (size_t i = 0;i < Hi;++i)
 	{
+		if (!bHaveKnownList)
+		{
+			break;
+		}
+		if (CKnown->QueryData(pWord[i].str))
+		{
+			var_knowWordNumber += 1;
+			all_know_RFC+=pWord[i].RFC;
+		}
+
+	}
+	all_know_RFC = all_know_RFC * 100 / all;//得到频率
+	
+
+	for (size_t i = 0,number=0;i < Hi;++i)
+	{
+
+
 		if (bHaveKnownList&&CKnown->QueryData(pWord[i].str))
 		{
-			var_knowWordNumber+=1;
-			printf("占比:%2d%% %-10s,RCF:%d  √\r\n", diao[i], pWord[i].str, pWord[i].RFC);
+			//var_knowWordNumber+=1;
+			//printf("%3d占比:%2d%% %-10s,RCF:%d  √		\r\n",Hi-i, diao[i], pWord[i].str, pWord[i].RFC);
 		}
 		else
 		{
-			var_noKnowNumber+=1;
-			printf("占比:%2d%% %-10s,RCF:%d\r\n", diao[i], pWord[i].str, pWord[i].RFC);
+			number += 1;
+			
+			if (pWord[i].RFC)
+			{
+				var_noKnowNumber += 1;
+				
+				printf("%3d %-10s,RCF:%d			\r\n", Hi - number - var_knowWordNumber + 1, pWord[i].str, pWord[i].RFC);
+
+			}
+
 		}
+		
 	}
 	delete(CKnown);
+	printf("已经掌握的单词在频率上占比:%d%%\r\n", all_know_RFC);
 	printf("已经了解的单词量:%d\r\n",var_knowWordNumber);
 	printf("还不了解的单词量:%d\r\n", var_noKnowNumber);
 	return;
@@ -322,7 +357,12 @@ void CDictTrie::ReadDateFromFile(const char* inputFileName)
 
 	fin.close();
 }
+/*
+将字符串复制进已经申请的位置，大小为Hi。超过Hi的不再计算
+缺陷是超过256就不再记录了。
+这里更适合用栈来处理。
 
+*/
 void CDictTrie::GetAllString(const char* str, size_t Counte)
 {
 	char* tmp = (char*)str;

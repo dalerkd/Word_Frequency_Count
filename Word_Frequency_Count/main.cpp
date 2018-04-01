@@ -32,6 +32,7 @@ int work(int argc, char** argv)
 	{
 		printf("参数过多");
 		system("pause");
+		return 0;
 	}
 	SetConsoleTitleA(inputFileNmae); // 设置窗口标题
 	cout << "Welcome,欢迎使用字典树" << endl;
